@@ -20,15 +20,15 @@ p_i <- function(y,
                 n_u,
                 n_l,
                 C){
-  
+
   j_nu <- (n_l + 1):(n_l + n_u)
-  
+
   S_i_l <- S[, 1:n_l]
   S_i_u <- S[, j_nu]
-  
+
   p_i_1 <- exp(-2*H) * (S_i_l %*% delta(y[1:n_l], 1))
   p_i_2 <- (C/2) * exp(-H) * (S_i_u %*% exp(H[j_nu]))
-  
+
   return(p_i_1 + p_i_2)
 }
 
@@ -39,15 +39,15 @@ q_i <- function(y,
                 n_u,
                 n_l,
                 C){
-  
+
   j_nu <- (n_l + 1):(n_l + n_u)
-  
+
   S_i_l <- S[, 1:n_l]
   S_i_u <- S[, j_nu]
-  
+
   q_i_1 <- (exp(2*H) * (S_i_l %*% delta(y[1:n_l], -1)))
   q_i_2 <- (C/2) * exp(H) * (S_i_u %*% exp(-H[j_nu]))
-  
+
   return(q_i_1 + q_i_2)
 }
 
@@ -61,18 +61,18 @@ delta <- function(x, y) {
 predict.semiboost <- function(model, table){
   mod <- model$h
   alpha_mod <- model$alpha
-  
+
   preds_temp  <- lapply(mod, function(x) predict(x, as.data.frame(table), "class"))
   preds <- lapply(preds_temp, function(x) ifelse(as.numeric(x) == 1, 0, 1))
   result <- lapply(preds, function(x) sapply(alpha_mod, function(y) sum(x * y, na.rm=T)))
-  
+
   return(result)
 }
 
 ## Wheighted Error function 'hi', 'pi' and 'qi'as in formula (12)
 w_error <- function(h, p, q) {
   num = 0
-  
+
   num <- sum(if_else(h == -1, num + p, if_else(h == 1, num + q, 0)))
   den <- sum(p + q)
   return(num/den)
@@ -97,17 +97,17 @@ w_error <- function(h, p, q) {
 #' @param unlabeled_perc The percentile of unlabeled value samples.
 
 
-semiboost <- function(data_train, 
+semiboost <- function(data_train,
                       target_train,
-                      
-                      data_test, 
-                      target_test, 
-                      
+
+                      data_test,
+                      target_test,
+
                       S,
-                      
-                      n_iter, 
+
+                      n_iter,
                       unlabeled_perc,
-                      
+
                       print_each = 10,
                       model = "tree"){
 
@@ -179,8 +179,8 @@ semiboost <- function(data_train,
   class(result) <- "semiboost"
   return(result)
 }
-# 
+#
 # model <- semiboost(train_data, test_data, target_train = is_churn, target_test = is_churn_test,
 # 					sigma = 1, n_iter = 3, unlabeled_perc = 0.1)
-# 
+#
 # load("C:/Users/lorena.rodriguez/Documents/SEMIBOOST/semiboost/semiboost")
