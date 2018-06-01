@@ -1,4 +1,3 @@
-
 import numpy as np
 from sklearn import neighbors
 from sklearn.svm import SVC
