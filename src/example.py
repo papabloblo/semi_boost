@@ -1,44 +1,34 @@
 ''' Example of semi-boost implementation '''
-import os
-import importlib
-# os.chdir('src')
 
-from sklearn import datasets
+import os
+import sys
+import importlib
+from sklearn.datasets import make_classification
 import numpy as np
-import SemiBoost
-importlib.reload(SemiBoost)
+import pandas as pd
 from sklearn.svm import SVC
 
+# Set working directory to file directory
+os.chdir('/data/home/joliver/github/semi_boost/src')
+import SemiBoost
+importlib.reload(SemiBoost)
 
-# Import data to use
-iris = datasets.load_breast_cancer()
-rng = np.random.RandomState(42)
-labels = np.copy(iris.target)
+
+''' SIMULATE SEMI SUPERVISED DATASET '''
+X, y = make_classification(n_features = 20, n_samples = 10000)
+
+labels = np.copy(y)
 labels[labels == 0] = -1
 
 # create some unlabeled data
-random_unlabeled_points = rng.rand(len(iris.target)) < 0.3
+random_unlabeled_points = rng.rand(len(y)) < 0.3
 labels[random_unlabeled_points] = 0
+y = labels
 
-X, y = iris.data, labels
-
-clf = SVC()
-model = SemiBoost.SemiBoostModel(hello = 'hello world', base_model = clf)
-
-S, H, idx_label = model.fit(X, y)
-X.shape
-S[:,idx_label].todense().dot(y[idx_label]).shape
-
-Ht = np.exp(H).reshape((H.shape[0],1))
-Ht.shape
-S[:,idx_label].shape
-(S*H).shape
-np.multiply(S,np.exp(H)).shape
-np.multiply(np.multiply(S,(y==1)),np.exp(H)).shape
-#=============================
+''' SEMIBOOST SKLEARN STYLE '''
 
 clf = SVC()
-clf.fit(iris.data, iris.target)
-clf.score(iris.data, iris.target)
+importlib.reload(SemiBoost)
+model = SemiBoost.SemiBoostClassifier(base_model = clf)
 
-(y == 1)
+semiboost_model = model.fit(X, y, n_neighbors = 4, n_jobs = 10)
