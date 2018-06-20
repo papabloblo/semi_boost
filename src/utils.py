@@ -17,7 +17,7 @@ import importlib
 importlib.reload(SemiBoost)
 
 
-def mejora_semiboost(n = 20, clf = DecisionTreeClassifier(),
+def mejora_semiboost(n = 20, clf = SVC(probability = True),
                      n_features = 5, n_samples = 1000, ratio_unsampled = 0.5,
                      data_simulation = 'make_classification'):
 
@@ -73,9 +73,9 @@ def mejora_semiboost(n = 20, clf = DecisionTreeClassifier(),
 
 
 
-def plot_classification(clf = DecisionTreeClassifier(),
-                     n_features = 2, n_samples = 1000, ratio_unsampled = 0.99,
-                     data_simulation = 'make_classification'):
+def plot_classification(clf = SVC(probability = True),
+                        n_features = 2, n_samples = 1000, ratio_unsampled = 0.99,
+                        data_simulation = 'make_classification'):
 
                              ''' SIMULATE SEMI SUPERVISED DATASET '''
                              if data_simulation == 'make_classification':
@@ -111,24 +111,25 @@ def plot_classification(clf = DecisionTreeClassifier(),
                              model = SemiBoost.SemiBoostClassifier(base_model = clf)
                              model.fit(X_train, y_train, n_jobs = 10, max_models = 10, similarity_kernel='rbf', verbose = False)
 
+                             ''' Plot '''
+                             gs = gridspec.GridSpec(1, 2)
+                             fig = plt.figure(figsize=(10,8))
+
+                             ax = plt.subplot(gs[0, 0])
+                             fig = plot_decision_regions(X=X_test, y=y_test, clf=model, legend=2)
+                             plt.title('SemiBoost')
+
 
                              ''' BASE CLASSIFIER '''
                              basemodel = clf
                              XX = X_train[~random_unlabeled_points, ]
                              yy = y_train[~random_unlabeled_points]
+
                              basemodel.fit(XX, yy)
-
+                             
                              ''' Plot '''
-                             gs = gridspec.GridSpec(1, 2)
-                             fig = plt.figure(figsize=(10,8))
-
-                             labels = ['SemiBoost', 'BaseModel']
-                             for clf, lab, grd in zip([model, basemodel],
-                                                     labels,
-                                                     [0,1]):
-
-                                                     ax = plt.subplot(gs[0, grd])
-                                                     fig = plot_decision_regions(X=X_test, y=y_test, clf=clf, legend=2)
-                                                     plt.title(lab)
+                             ax = plt.subplot(gs[0, 1])
+                             fig = plot_decision_regions(X=X_test, y=y_test, clf=basemodel, legend=2)
+                             plt.title('BaseModel')
 
                              plt.show()
