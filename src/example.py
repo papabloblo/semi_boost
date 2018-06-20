@@ -13,11 +13,15 @@ import importlib
 importlib.reload(SemiBoost)
 importlib.reload(utils)
 
-# make_classification, make_gaussian_quantiles, make_blobs, make_moons, make_circles
-utils.plot_classification(data_simulation = 'make_moons',ratio_unsampled = 0.7)
+utils.plot_classification(data_simulation = 'make_circles',ratio_unsampled = 0.9)
 
-utils.plot_classification(data_simulation = 'make_moons',ratio_unsampled = 0.7)
+utils.plot_classification(data_simulation = 'make_moons',ratio_unsampled = 0.9)
 
+utils.plot_classification(data_simulation = 'make_blobs',ratio_unsampled = 0.9)
 
-utils.mejora_semiboost(n_features = 10, ratio_unsampled = 0.8, n_samples = 1000,
+utils.plot_classification(data_simulation = 'make_classification',ratio_unsampled = 0.9)
+
+utils.plot_classification(data_simulation = 'make_gaussian_quantiles',ratio_unsampled = 0.9)
+
+utils.mejora_semiboost(n_features = 10, ratio_unsampled = 0.95, n_samples = 1000,
                  data_simulation = 'make_moons', )
