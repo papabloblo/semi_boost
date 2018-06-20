@@ -39,11 +39,11 @@ class SemiBoostClassifier():
 
         elif similarity_kernel == 'rbf':
             # First aprox
-            self.S = np.sqrt(rbf_kernel(X, gamma = 1000))
+            self.S = np.sqrt(rbf_kernel(X, gamma = 1))
             # set gamma parameter as the 15th percentile
-            # sigma = np.percentile(np.log(self.S), 15)
-            # sigma_2 = (1/sigma**2)*np.ones(self.S.shape[0])
-            # self.S = np.power(self.S, sigma_2)
+            sigma = np.percentile(np.log(self.S), 90)
+            sigma_2 = (1/sigma**2)*np.ones((self.S.shape[0],self.S.shape[0]))
+            self.S = np.power(self.S, sigma_2)
             # Matrix to sparse
             self.S = sparse.csr_matrix(self.S)
 
@@ -136,7 +136,6 @@ class SemiBoostClassifier():
                 H = np.add(H, self.weights[i]*self.models[i].predict(X[idx_not_label]))
                 # H = np.add(H, self.weights[i]*self.models[i].predict_proba(X[idx_not_label])[:,1]/w)
 
-
             # H = np.array(list(map(lambda x: 1 if x>0 else -1, H)))
             #=============================================================
             # Breaking conditions
@@ -168,8 +167,6 @@ class SemiBoostClassifier():
         for i in range(len(self.models)):
             # estimate = np.add(estimate,  self.weights[i]*self.models[i].predict_proba(X)[:,1]/w)
             estimate = np.add(estimate, self.weights[i]*self.models[i].predict(X))
-
-
         estimate = np.array(list(map(lambda x: 1 if x>0 else -1, estimate)))
         estimate = estimate.astype(int)
         return estimate
