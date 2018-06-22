@@ -23,5 +23,5 @@ utils.plot_classification(data_simulation = 'make_classification',ratio_unsample
 
 utils.plot_classification(data_simulation = 'make_gaussian_quantiles',ratio_unsampled = 0.9)
 
-utils.mejora_semiboost(n_features = 10, ratio_unsampled = 0.95, n_samples = 1000,
-                 data_simulation = 'make_moons', )
+utils.mejora_semiboost(n_features = 10, ratio_unsampled = 0.50, n_samples = 1000,
+                 data_simulation = 'make_gaussian_quantiles')

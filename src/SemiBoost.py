@@ -13,9 +13,11 @@ class SemiBoostClassifier():
 
     def fit(self, X, y,
             n_neighbors=4, n_jobs = 1,
-            max_models = 10, labels = [1,-1],
-            sample_percent = 0.10,
-            similarity_kernel = 'knn',
+            max_models = 15,
+            sample_percent = 0.5,
+            sigma_percentile = 90,
+            labels = [1,-1],
+            similarity_kernel = 'rbf',
             verbose = True):
 
         ''' Fit model'''
@@ -41,7 +43,7 @@ class SemiBoostClassifier():
             # First aprox
             self.S = np.sqrt(rbf_kernel(X, gamma = 1))
             # set gamma parameter as the 15th percentile
-            sigma = np.percentile(np.log(self.S), 90)
+            sigma = np.percentile(np.log(self.S), sigma_percentile)
             sigma_2 = (1/sigma**2)*np.ones((self.S.shape[0],self.S.shape[0]))
             self.S = np.power(self.S, sigma_2)
             # Matrix to sparse
@@ -125,6 +127,12 @@ class SemiBoostClassifier():
             #=============================================================
             # Update final model
             #=============================================================
+            # If a<0 the model is not converging
+            if a<0:
+                if verbose:
+                    print('Problematic convergence of the model. a<0')
+                break
+
             # Save model
             self.models.append(clf)
             #save weights
@@ -152,13 +160,11 @@ class SemiBoostClassifier():
                     print('Number of iterations: ',t + 1)
                 break
 
-            # If a<0 the model is not converging
-            if a<0:
-                if verbose:
-                    print('Problematic convergence of the model. a<0')
-                break
+        if verbose:
+            print('\n The model weights are \n')
+            print(self.weights)
 
-        print(self.weights)
+
 
     def predict(self, X):
         estimate = np.zeros(X.shape[0])

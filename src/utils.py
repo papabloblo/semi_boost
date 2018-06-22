@@ -19,7 +19,8 @@ importlib.reload(SemiBoost)
 
 def mejora_semiboost(n = 20, clf = SVC(probability = True),
                      n_features = 5, n_samples = 1000, ratio_unsampled = 0.5,
-                     data_simulation = 'make_classification'):
+                     data_simulation = 'make_classification',
+                     similarity_kernel = 'rbf'):
 
     ROC_semiboost = list()
     ROC_clf = list()
@@ -126,7 +127,7 @@ def plot_classification(clf = SVC(probability = True),
                              yy = y_train[~random_unlabeled_points]
 
                              basemodel.fit(XX, yy)
-                             
+
                              ''' Plot '''
                              ax = plt.subplot(gs[0, 1])
                              fig = plot_decision_regions(X=X_test, y=y_test, clf=basemodel, legend=2)
